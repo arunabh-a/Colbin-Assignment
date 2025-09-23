@@ -1,14 +1,33 @@
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "next-themes";
+import { setupApiInterceptors } from "@/service/app.api";
+import { useEffect } from "react";
+import Auth from "./pages/auth";
+import Profile from "./pages/main";
 
-import './App.css'
-
-function App() {
+const App = () => {
+  useEffect(() => {
+    // Setup API interceptors for automatic token refresh
+    setupApiInterceptors();
+  }, []);
 
   return (
-    <div>
-        <h1>Hello World!</h1>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <TooltipProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/auth" replace />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/main" element={<Profile />} />
+            <Route path="/profile" element={<Navigate to="/main" replace />} />
+          </Routes>
+        </BrowserRouter>
+        <Toaster />
+      </TooltipProvider>
+    </ThemeProvider>
+  );
+};
 
-    </div>
-  )
-}
-
-export default App
+export default App;

@@ -1,0 +1,348 @@
+{
+  "info": {
+    "name": "Colbin Recruitment API",
+    "description": "Authentication and user management API for the Colbin recruitment platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('userId', response.id);",
+                  "    pm.test('User registered successfully', function () {",
+                  "        pm.expect(response).to.have.property('id');",
+                  "        pm.expect(response).to.have.property('email');",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Registration failed', function () {",
+                  "        pm.response.to.have.status.oneOf([400, 409, 500]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"securePassword123\",\n  \"name\": \"John Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user with email, password, and name"
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.accessToken);",
+                  "    pm.collectionVariables.set('userId', response.userId);",
+                  "    pm.test('Login successful', function () {",
+                  "        pm.expect(response).to.have.property('accessToken');",
+                  "        pm.expect(response).to.have.property('userId');",
+                  "    });",
+                  "    pm.test('Refresh token cookie set', function () {",
+                  "        pm.expect(pm.cookies.has('refreshToken')).to.be.true;",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Login failed', function () {",
+                  "        pm.response.to.have.status.oneOf([400, 401, 500]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with email and password to get access token and refresh cookie"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', response.accessToken);",
+                  "    pm.test('Token refreshed successfully', function () {",
+                  "        pm.expect(response).to.have.property('accessToken');",
+                  "    });",
+                  "    pm.test('New refresh token cookie set', function () {",
+                  "        pm.expect(pm.cookies.has('refreshToken')).to.be.true;",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Token refresh failed', function () {",
+                  "        pm.response.to.have.status.oneOf([401, 500]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            },
+            "description": "Refresh access token using the HttpOnly refresh token cookie"
+          }
+        },
+        {
+          "name": "Logout User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', '');",
+                  "    pm.test('Logout successful', function () {",
+                  "        pm.expect(response).to.have.property('success', true);",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Logout failed', function () {",
+                  "        pm.response.to.have.status.oneOf([500]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "Logout user by revoking refresh token and clearing cookie"
+          }
+        }
+      ],
+      "description": "User authentication endpoints"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Current User Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.test('Profile retrieved successfully', function () {",
+                  "        pm.expect(response).to.have.property('id');",
+                  "        pm.expect(response).to.have.property('email');",
+                  "        pm.expect(response).to.have.property('name');",
+                  "        pm.expect(response).to.have.property('role');",
+                  "    });",
+                  "} else if (pm.response.code === 401) {",
+                  "    pm.test('Authentication required', function () {",
+                  "        pm.response.to.have.status(401);",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Request failed', function () {",
+                  "        pm.response.to.have.status.oneOf([404, 500]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "me"]
+            },
+            "description": "Get the current authenticated user's profile"
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.test('User retrieved successfully', function () {",
+                  "        pm.expect(response).to.have.property('id');",
+                  "        pm.expect(response).to.have.property('email');",
+                  "        pm.expect(response).to.have.property('name');",
+                  "    });",
+                  "} else if (pm.response.code === 401) {",
+                  "    pm.test('Authentication required', function () {",
+                  "        pm.response.to.have.status(401);",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Request failed', function () {",
+                  "        pm.response.to.have.status.oneOf([400, 500]);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/user?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "user"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "description": "Get a user by their ID (requires authentication)"
+          }
+        }
+      ],
+      "description": "User management endpoints"
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Server Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Server is running', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.text()).to.include('Hello World');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Check if the server is running"
+          }
+        }
+      ],
+      "description": "Server health and status checks"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set base URL if not configured",
+          "if (!pm.collectionVariables.get('baseUrl')) {",
+          "    pm.collectionVariables.set('baseUrl', 'http://localhost:4000');",
+          "}"
+        ]
+      }
+    }
+  ]
+}
