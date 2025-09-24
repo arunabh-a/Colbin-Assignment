@@ -9,7 +9,7 @@ import type {
 } from "./api.interface";
 
 // Base API configuration
-const API_BASE_URL = "http://localhost:4000/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 // Helper function for making API requests
 async function apiRequest<T>(

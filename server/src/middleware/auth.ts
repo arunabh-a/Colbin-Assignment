@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verifyAccessToken } from "../utils/jwt";
+import { verifyAccessToken } from "../utils/jwt.js";
 
 export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
     // Try to get token from Authorization header first, then from cookies

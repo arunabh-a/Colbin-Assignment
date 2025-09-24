@@ -5,10 +5,10 @@ import dotenv from 'dotenv';
 // Initialize dotenv before any other imports that might use env vars
 dotenv.config();
 
-import authRoutes from './routes/auth';
-import userRoutes from './routes/users';
+import authRoutes from './routes/auth.js';
+import userRoutes from './routes/users.js';
 import cookieParser from 'cookie-parser'; 
-import { errorHandler } from './middleware/errorHandler';
+import { errorHandler } from './middleware/errorHandler.js';
 
 export const app = express();
 app.use(cors({ origin: process.env.CORS_CLIENT_URL, credentials: true }));

@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import e, { Router } from "express";
-import { hashPassword, verifyPassword } from "../utils/passwordHash";
-import { signAccessToken } from "../utils/jwt";
-import { generateVerificationToken, sendVerificationEmail } from "../utils/emailService";
+import { Router } from "express";
+import { hashPassword, verifyPassword } from "../utils/passwordHash.js";
+import { signAccessToken } from "../utils/jwt.js";
+import { generateVerificationToken, sendVerificationEmail } from "../utils/emailService.js";
 import * as crypto from "crypto";
 
 const router = Router();
