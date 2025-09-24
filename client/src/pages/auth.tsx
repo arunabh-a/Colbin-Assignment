@@ -62,10 +62,10 @@ export default function Auth() {
     try {
       const response = await api.auth.register(userData);
       
-      toast.success(`Welcome to our platform, ${response.user.name || response.user.email}!`);
+      toast.success(response.message || "Registration successful! Please check your email to verify your account.");
 
-      // Redirect will happen via Navigate component after auth state update
-      setIsAuthenticated(true);
+      // Don't set authenticated - user needs to verify email first
+      // Stay on the auth page so user can sign in after verification
     } catch (error: any) {
       console.error('Registration failed:', error);
       toast.error(error.message || "Failed to create account");

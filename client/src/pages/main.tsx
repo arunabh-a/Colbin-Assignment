@@ -81,14 +81,11 @@ export default function Profile() {
     };
 
     try {
-      // Note: Since our backend doesn't have profile update endpoint yet,
-      // we'll need to implement this. For now, we'll simulate it.
+      // Update profile via API
+      const updatedUser = await api.user.updateProfile(updateData);
       
-      // TODO: Implement profile update endpoint on backend
-      // const updatedUser = await api.user.updateProfile(updateData);
-      
-      // Simulate update for now
-      setUser(prev => prev ? { ...prev, ...updateData } : null);
+      // Update local state with the response from backend
+      setUser(updatedUser);
       setEditing(false);
       
       toast.success("Profile updated successfully");

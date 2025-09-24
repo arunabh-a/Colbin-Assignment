@@ -14,7 +14,7 @@ router.get('/user', requireAuth, async (req, res) => {
         }
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { id: true, email: true, name: true, role: true, bio: true, createdAt: true, updatedAt: true }
+            select: { id: true, email: true, name: true, bio: true, createdAt: true, updatedAt: true, emailVerified: true }
         });
         return res.status(200).json(user);
     } catch (error) {
@@ -29,7 +29,16 @@ router.get('/me', requireAuth, async (req, res) => {
         const { user } = req as any;
         const me = await prisma.user.findUnique({
             where: { id: user.userId },
-            select: { id: true, email: true, name: true, role: true, bio: true, createdAt: true, updatedAt: true }
+            select: { 
+                id: true, 
+                email: true, 
+                name: true, 
+                bio: true, 
+                emailVerified: true, 
+                createdAt: true, 
+                updatedAt: true, 
+                lastLoginAt: true 
+            }
         });
         if (!me) return res.status(404).json({ message: 'User not found' });
         return res.status(200).json(me);
@@ -48,7 +57,16 @@ router.put('/me', requireAuth, async (req, res) => {
         const updatedUser = await prisma.user.update({
             where: { id: user.userId },
             data: { name, bio },
-            select: { id: true, email: true, name: true, role: true, bio: true, createdAt: true, updatedAt: true }
+            select: { 
+                id: true, 
+                email: true, 
+                name: true, 
+                bio: true, 
+                emailVerified: true, 
+                createdAt: true, 
+                updatedAt: true, 
+                lastLoginAt: true 
+            }
         });
         return res.status(200).json(updatedUser);
     } catch (error) {

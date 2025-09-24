@@ -32,6 +32,16 @@ export interface AuthResponse {
   accessToken: string;
 }
 
+export interface RegisterResponse {
+  message: string;
+  user: {
+    id: string;
+    email: string;
+    name?: string;
+    emailVerified: boolean;
+  };
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -45,6 +55,11 @@ export interface RegisterRequest {
 
 export interface RefreshTokenResponse {
   accessToken: string;
+}
+
+export interface EmailVerificationResponse {
+  message: string;
+  success: boolean;
 }
 
 export interface UserProfile {

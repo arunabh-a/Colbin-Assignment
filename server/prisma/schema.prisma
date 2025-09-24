@@ -11,6 +11,7 @@ model User {
   id                  String          @id @default(uuid())
   email               String          @unique
   emailVerified       Boolean         @default(false)
+  emailVerificationToken String?      @unique
   hashedPassword      String
   name                String?
   bio                 String?

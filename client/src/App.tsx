@@ -6,6 +6,7 @@ import { setupApiInterceptors } from "@/service/app.api";
 import { useEffect } from "react";
 import Auth from "./pages/auth";
 import Profile from "./pages/main";
+import VerifyEmail from "./pages/verify-email";
 
 const App = () => {
   useEffect(() => {
@@ -22,6 +23,7 @@ const App = () => {
             <Route path="/auth" element={<Auth />} />
             <Route path="/main" element={<Profile />} />
             <Route path="/profile" element={<Navigate to="/main" replace />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
           </Routes>
         </BrowserRouter>
         <Toaster />
