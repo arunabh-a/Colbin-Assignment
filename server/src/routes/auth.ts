@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 import { hashPassword, verifyPassword } from "../utils/passwordHash.js";
 import { signAccessToken } from "../utils/jwt.js";
-import { generateVerificationToken, sendVerificationEmail } from "../utils/emailService.js";
+import { generateVerificationToken, sendVerificationEmail, sendVerificationEmailFallback } from "../utils/emailService.js";
 import * as crypto from "crypto";
 
 const router = Router();
@@ -40,10 +40,18 @@ router.post("/register", async (req, res) => {
         });
 
         // Send verification email
-        const emailSent = await sendVerificationEmail(email, name, verificationToken);
-        
-        if (!emailSent) {
-            console.warn('Failed to send verification email, but user was created');
+        try {
+            const emailResult = await sendVerificationEmail(email, name, verificationToken);
+            
+            if ('fallback' in emailResult && emailResult.fallback) {
+                console.warn('Email service unavailable, using fallback method');
+                console.log(`Verification URL for ${email}: ${emailResult.verificationUrl}`);
+            } else {
+                console.log('Verification email sent successfully:', emailResult.messageId);
+            }
+        } catch (error) {
+            console.error('Error sending verification email:', error);
+            console.error('Failed to send verification email, but user was created');
         }
 
         // Don't generate tokens immediately - user needs to verify email first
@@ -54,7 +62,6 @@ router.post("/register", async (req, res) => {
                 email: newUser.email,
                 name: newUser.name,
                 emailVerified: newUser.emailVerified,
-                emailVerificationToken: newUser.emailVerificationToken,
             }
         });
     } catch (error) {
